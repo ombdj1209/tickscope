@@ -16,7 +16,7 @@ jobs:
       matrix:
         cxx: [g++, clang++]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build and test
         run: make test CXX=${{ matrix.cxx }}
 
@@ -27,7 +27,7 @@ jobs:
       matrix:
         target: [asan, tsan]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Relax ASLR for ThreadSanitizer
         if: matrix.target == 'tsan'
         run: sudo sysctl vm.mmap_rnd_bits=28
