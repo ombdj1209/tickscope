@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cxx: [g++, clang++]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test
+        run: make test CXX=${{ matrix.cxx }}
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [asan, tsan]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Relax ASLR for ThreadSanitizer
+        if: matrix.target == 'tsan'
+        run: sudo sysctl vm.mmap_rnd_bits=28
+      - name: Build and test with sanitizers
+        run: make ${{ matrix.target }} CXX=clang++
